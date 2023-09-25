@@ -26,6 +26,11 @@ class Hotel:
         #updates the CSV file
         df.to_csv("hotels.csv", index=False)
 
+class SpaHotel(Hotel):
+    def book_spa_package(self):
+        pass
+
+
 
 class ReservationConfirmation:
     def __init__(self, customer_name,  hotel):
@@ -42,6 +47,25 @@ class ReservationConfirmation:
         """
         return content
 
+
+
+class SpaReceipt:
+    def __init__(self, customer_name,  hotel):
+        self.customer_name = customer_name
+        self.hotel = hotel
+    def generate(self):
+        content = f"""
+        Thank you for your SPA reservation!
+        Here are your SPA booking details: 
+        
+        Name: {self.customer_name}
+        Hotel Name: {self.hotel.name}
+            """
+        return content
+
+
+
+
 class CreditCard:
     def __init__(self, card_num):
         self.num = card_num
@@ -54,6 +78,8 @@ class CreditCard:
             return True
         return False
 
+
+
 class SecureCreditCard(CreditCard):
     def authenticate(self, given_password):
         password = df_card_security.loc[df_card_security["number"] == self.num, "password"].squeeze()
@@ -62,11 +88,13 @@ class SecureCreditCard(CreditCard):
         return False
 
 
+
+
 print(df)
 
 #Get ID user wants to book
 hotel_ID = input("Enter the id of the hotel: ")
-hotel = Hotel(hotel_ID)
+hotel = SpaHotel(hotel_ID)
 
 #If hotel available, book
 if hotel.available():
@@ -83,6 +111,14 @@ if hotel.available():
             #Call Reservation class  and get confirmation
             reservation_confirm = ReservationConfirmation(customer_name, hotel)
             print(reservation_confirm.generate())
+
+            #Asking if user wants Spa package
+            spa = input("Do you want to book a spa package? ")
+            if spa.lower() == 'yes':
+                hotel.book_spa_package()
+                spa_confirm = SpaReceipt(customer_name, hotel)
+                print(spa_confirm.generate())
+
         else:
             print("Credit card authentication failed.")
 
@@ -91,3 +127,4 @@ if hotel.available():
 
 else:
     print("Hotel is not available")
+
